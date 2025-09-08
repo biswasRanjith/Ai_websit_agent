@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Validation Test</title>
+</head>
+<body>
+    <h1>Validation Test</h1>
+    <input type="text" id="input" value="GitHub" />
+    <button onclick="testValidation()">Test Validation</button>
+    <div id="result"></div>
+
+    <script>
+        const validateInput = (value) => {
+            if (!value.trim()) {
+                return { isValid: false, type: 'url', message: 'Please enter a URL or company name' }
+            }
+
+            try {
+                const urlToTest = value.startsWith('http') ? value : `https://${value}`
+                const url = new URL(urlToTest)
+                
+                const domain = url.hostname
+                if (!domain.includes('.') && !domain.includes('localhost') && !domain.includes('127.0.0.1')) {
+                    return { isValid: true, type: 'company' }
+                }
+                
+                return { isValid: true, type: 'url' }
+            } catch {
+                if (value.length < 2) {
+                    return { isValid: false, type: 'company', message: 'Company name must be at least 2 characters' }
+                }
+                return { isValid: true, type: 'company' }
+            }
+        }
+
+        function testValidation() {
+            const input = document.getElementById('input').value
+            const validation = validateInput(input)
+            
+            let url = input
+            if (validation.type === 'company') {
+                url = `https://www.${input.toLowerCase().replace(/\s+/g, '')}.com`
+            } else if (!input.startsWith('http')) {
+                url = `https://${input}`
+            }
+            
+            document.getElementById('result').innerHTML = `
+                <h3>Results:</h3>
+                <p><strong>Input:</strong> ${input}</p>
+                <p><strong>Validation:</strong> ${JSON.stringify(validation, null, 2)}</p>
+                <p><strong>Converted URL:</strong> ${url}</p>
+            `
+        }
+    </script>
+</body>
+</html>
