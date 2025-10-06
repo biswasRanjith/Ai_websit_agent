@@ -6,16 +6,22 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/analysis': process.env.VITE_API_URL || 'http://localhost:3001',
-      '/api': process.env.VITE_API_URL || 'http://localhost:3001',
+      '/analysis': {
+        target: process.env.VITE_API_URL || 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/api': {
+        target: process.env.VITE_API_URL || 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
   define: {
-    // Expose environment variables to the client
-    'process.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL),
+    'process.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL || 'http://localhost:3000'),
   },
   build: {
-    // Ensure environment variables are available at build time
     rollupOptions: {
       output: {
         manualChunks: undefined,
